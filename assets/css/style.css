@@ -1,0 +1,71 @@
+* {
+    box-sizing: border-box;
+}
+
+
+h2 {
+    text-align: center;
+}
+
+.flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-flow: row wrap;
+    padding: 10px;
+}
+
+.flex.horizontal {
+    /*margin:-10px;*/
+}
+
+
+.toparea {
+    border: 2px solid red;
+    height: 300px;
+    width: 300px;
+    margin: 5px;
+    text-align: center;
+}
+
+.messagearea {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    margin-top: 5px;
+}
+
+
+
+.stuffhappens {
+    display: flex;
+    flex-direction: row;
+}
+
+
+#stuffhappens {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+    height: 300px;
+    width: 90%;
+    justify-content: center;
+}
+
+textarea {
+    height:300px;
+}
+
+#currmess {
+    width:95%;
+}
+
+
+
