@@ -1,11 +1,19 @@
 * {
-    box-sizing: border-box;
+    /*box-sizing: border-box;*/
     text-align: center;
 }
 
+body {
+    background-image: url("../images/backbround1.jpg");
+}
 
 h2 {
     text-align: center;
+    color: whitesmoke;
+}
+
+input {
+    color: black;
 }
 
 .flex {
@@ -30,15 +38,17 @@ h2 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    font: "Comic Sans MS";
-    font-size: 20px;
-    
+    font-family: "Comic Sans MS";
+    font-size: 26px;
+    background: coral;
+
 }
 
 .messagearea {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    height: auto;
 }
 
 
@@ -47,26 +57,35 @@ h2 {
     flex-direction: row;
     justify-content:space-around;
     margin-top: 5px;
+    margin-right: -15px;
 }
 
 .userchoice {
     display: flex;
     flex-direction: column;
+    font-size: 26px;
+    font-family: "Comic Sans MS";
 }
 
 .userchoices {
     display: flex;
     flex-direction: column;
+    font-size: 26px;
+    font-family: "Comic Sans MS";
 }
 
 
 .stuffhappens {
     display: flex;
     flex-direction: row;
+    height: auto;
 }
 
 .noise {
     text-align: left;
+}
+.myPlaya {
+    color: #6ea3da;
 }
 
 
@@ -74,7 +93,7 @@ h2 {
     display: flex;
     flex-direction: column;
     border: 2px solid black;
-    height: 300px;
+    height: auto;
     width: 90%;
     justify-content: center;
 }
@@ -90,14 +109,47 @@ h2 {
 #chat {
     height: 300px;
     text-align: left;
+    overflow: scroll;
+    opacity: .5;
+    background-color: #efefef;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 #results {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    font-size: 20px;
+    color: red;
 }
 
+#boom {
+    font-size: 36px;
+    font-family: "Comic Sans MS";
+    color: #378DBC;
+}
+
+#submitmes {
+    width: 5%;
+}
+
+#heading {
+    font-family: "Comic Sans MS";
+    font-size: 18px;
+    text-align: left;
+    color: whitesmoke;
+}
+
+#players {
+    text-align: left;
+    color: black;
+}
+
+#submit {
+    text-align: left;
+    color: black;
+}
 
 
 

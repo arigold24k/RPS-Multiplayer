@@ -35,6 +35,19 @@ $("#player1").text("Waiting for Player 1");
 $("#player2").text("Waiting for Player 2");
 
 
+
+database.ref('player').on("value", function (snapshot) {
+
+    console.log(snapshot.val());
+    if (snapshot.val() === null) {
+        $("#player1").empty();
+        $("#player2").empty();
+        $("#player1").text("Waiting for Player 1");
+        $("#player2").text("Waiting for Player 2");
+    }
+
+});
+
 database.ref('player/turn').on("value",function(snapshot) {
     console.log(snapshot.val());
     if (snapshot.val() === null) {
@@ -46,7 +59,7 @@ database.ref('player/turn').on("value",function(snapshot) {
         turn1 = snapshot.val().turn;
     }
 
-})
+});
 
 console.log(turn1);
 
@@ -69,7 +82,10 @@ database.ref(PLAYERS_LOCATION).once("child_added").then(function(childSnapshot) 
 $("#submit").on("click", function() {
     name = $("#players").val();
     console.log(name);
-    assignplayernumber(name);
+    if (name.trim() != "") {
+        console.log(name);
+        assignplayernumber(name);
+    }
 
 
 });
@@ -138,13 +154,13 @@ function playGame(myPlayerNumber, myUserId) {
                 $("#results").empty();
                 userbox.empty();
                 userbox.append("<div class='playarea'>" + yourname + "</div>");
-                var selection = $("<div class = 'userchoice'>");
+                var selection = $("<div class = 'userchoices'>");
                 if(yourchoice === "none") {
                     selection.append("<button class='choices' value='rock'>Rock!</button>");
                     selection.append("<button class='choices' value='paper'>Paper!</button>");
                     selection.append("<button class='choices' value='scissors'>Scissors!</button>");
                 }else {
-                    selection.append("<div>" + yourchoice + "!</div>");
+                    selection.append("<div id='boom'>" + yourchoice.toUpperCase() + "!</div>");
                 }
                 userbox.append(selection);
                 userbox.append("<div class='playarea'> Wins: " + yourwins + ", Losses: " + yourloss + "</div>");
@@ -203,7 +219,9 @@ function playGame(myPlayerNumber, myUserId) {
 database.ref(CHAT_LOCATION).limitToLast(1).on("child_added", function (snapshot) {
     console.log("The message listener is working");
     console.log(snapshot.val());
-    $("#chat").append("<div class='noise'>" + snapshot.val().name + ": " + snapshot.val().mess + "</div>");
+    if (snapshot.val().name === name) {
+        $("#chat").append("<div class='noise myPlaya'>" + snapshot.val().name + ": " + snapshot.val().mess + "</div>");
+    }else {$("#chat").append("<div class='noise'>" + snapshot.val().name + ": " + snapshot.val().mess + "</div>");}
 });
 
 
