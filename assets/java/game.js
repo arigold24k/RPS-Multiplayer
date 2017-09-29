@@ -39,33 +39,31 @@ database.ref('player').on("value", function (snapshot) {
 
     console.log(snapshot.val());
     if (snapshot.val() === null){
-        $("#player1").empty();
+        $(".toparea").empty();
         $("#player1").text("Waiting for Player 1");
-        $("#player2").empty();
         $("#player2").text("Waiting for Player 2");
     }
     else if ((snapshot.val()[1] != undefined && snapshot.val()[2] != undefined) && playernum === null) {
         $("#player1").empty();
         $("#player1").text(snapshot.val()[1].name + " is currently playing.");
+        $("#results").empty();
+        $("#results").text("Please wait until there is an available spot.");
         $("#player2").empty();
         $("#player2").text(snapshot.val()[2].name + " is currently playing.");
 
     }
 
     else {
+        $(".toparea").empty()
         if (snapshot.val()[1] === undefined) {
-            $("#player1").empty();
             $("#player1").text("Waiting for Player 1");
         }else {
-            $("#player1").empty();
             $("#player1").text(snapshot.val()[1].name + " is waiting for you.");
         }
 
         if (snapshot.val()[2] === undefined) {
-            $("#player2").empty();
             $("#player2").text("Waiting for Player 2");
         }else {
-            $("#player2").empty();
             $("#player2").text(snapshot.val()[2].name + " is waiting for you.");
         }
 
