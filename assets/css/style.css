@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    text-align: center;
 }
 
 
@@ -26,6 +27,12 @@ h2 {
     width: 300px;
     margin: 5px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font: "Comic Sans MS";
+    font-size: 20px;
+    
 }
 
 .messagearea {
@@ -42,11 +49,24 @@ h2 {
     margin-top: 5px;
 }
 
+.userchoice {
+    display: flex;
+    flex-direction: column;
+}
+
+.userchoices {
+    display: flex;
+    flex-direction: column;
+}
 
 
 .stuffhappens {
     display: flex;
     flex-direction: row;
+}
+
+.noise {
+    text-align: left;
 }
 
 
@@ -59,13 +79,26 @@ h2 {
     justify-content: center;
 }
 
-textarea {
-    height:300px;
-}
 
 #currmess {
     width:95%;
+    display: flex;
+    flex-direction:  column;
+    text-align: left;
 }
+
+#chat {
+    height: 300px;
+    text-align: left;
+}
+
+#results {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+
 
 
 

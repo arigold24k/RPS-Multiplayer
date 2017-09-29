@@ -1,6 +1,7 @@
 var NUM_PLAYERS = 2;
 var PLAYERS_LOCATION = 'player';
 var TURN_LOCATION = 'player/turn';
+var CHAT_LOCATION = 'player/chat';
 var name;
 var playernum = null;
 var turn = 0;
@@ -100,7 +101,7 @@ function playGame(myPlayerNumber, myUserId) {
         docref.on("value", function (snapshot) {
             $("#heading").empty();
             $("#heading").append("<div>Hi " + myUserId + "!</div>");
-            $("#heading").append("<div>You are PLayer " + myPlayerNumber + "</div>");
+            $("#heading").append("<div>You are Player " + myPlayerNumber + "</div>");
 
             console.log(snapshot.val()[1]);
             console.log(snapshot.val()[2]);
@@ -108,6 +109,8 @@ function playGame(myPlayerNumber, myUserId) {
             if(snapshot.val()[opponentPlayerNumber] === undefined) {
                 $("#heading").append("<div>Waiting for second player</div>");
                 //update users box on dom
+                $("#player" + opponentPlayerNumber).empty();
+                $("#player" + opponentPlayerNumber).append("<div>Waiting for Player " + opponentPlayerNumber + ".</div>");
                 userbox = $("#player" + myPlayerNumber);
                     userbox.empty();
                     userbox.append("<div class='playarea'>" + myUserId + "</div>");
@@ -169,19 +172,22 @@ function playGame(myPlayerNumber, myUserId) {
 
                 if (outcome === "win"){
                     wins++;
+                    turn++;
                     $("#results").empty();
                     $("#results").append("<div>You Won!</div>");
                 }
                 else if (outcome === "lose"){
                     loss++;
+                    turn++;
                     $("#results").empty();
                     $("#results").append("<div>You Loss!</div>");
                 }
                 else if (outcome === "draw"){
+                    turn++;
                     $("#results").empty();
                     $("#results").append("<div>Its a Draw!</div>");
                 }
-                turn++;
+
 
                 updateResults(wins, loss, turn, playernum);
 
@@ -193,7 +199,21 @@ function playGame(myPlayerNumber, myUserId) {
 };
 
 
-//function to give the user playenumber
+//when the database hears a new messge is added
+database.ref(CHAT_LOCATION).limitToLast(1).on("child_added", function (snapshot) {
+    console.log("The message listener is working");
+    console.log(snapshot.val());
+    $("#chat").append("<div class='noise'>" + snapshot.val().name + ": " + snapshot.val().mess + "</div>");
+});
+
+
+//when the submit button to send messages is clicked
+$(document).on('click', '#submitmes', function() {
+    event.preventDefault();
+    var message = $("#currmess").val();
+    chatupdate(name, message);
+    $("#currmess").val("");
+});
 
 
 $(document).on('click', '.choices', function () {
@@ -284,8 +304,15 @@ function didYouWin(yourRPS, opponentRPS) {
 }
 
 
-//setting rps value to database
 
+
+//updating chat
+function chatupdate (myUserId, message) {
+    database.ref(CHAT_LOCATION).push({name: myUserId,mess: message});
+}
+
+
+//setting rps value to database
 function setRPS(myPlayerNumber, myRPS) {
     console.log(myPlayerNumber);
     console.log(myRPS);
@@ -311,5 +338,6 @@ function updateResults(myWins, myLoss, myCount, myPlayerNumber) {
 window.onunload = function() {
     database.ref("player/" + playernum).remove();
     docturn.remove();
+    database.ref(CHAT_LOCATION).remove();
 };
 
