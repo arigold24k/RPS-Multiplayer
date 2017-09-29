@@ -7,6 +7,9 @@ var turn = 0;
 var turn1;
 var userbox;
 var oppbox;
+var outcome;
+var wins = 0;
+var loss = 0;
 
 
 var config = {
@@ -23,6 +26,13 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 var docturn = database.ref(TURN_LOCATION);
+
+
+$("#player1").empty();
+$("#player2").empty();
+$("#player1").text("Waiting for Player 1");
+$("#player2").text("Waiting for Player 2");
+
 
 database.ref('player/turn').on("value",function(snapshot) {
     console.log(snapshot.val());
@@ -122,6 +132,7 @@ function playGame(myPlayerNumber, myUserId) {
 
                 console.log("two players and we are ready to play!");
                 userbox = $("#player" + myPlayerNumber);
+                $("#results").empty();
                 userbox.empty();
                 userbox.append("<div class='playarea'>" + yourname + "</div>");
                 var selection = $("<div class = 'userchoice'>");
@@ -136,6 +147,7 @@ function playGame(myPlayerNumber, myUserId) {
                 userbox.append("<div class='playarea'> Wins: " + yourwins + ", Losses: " + yourloss + "</div>");
 
                 oppbox = $("#player" + opponentPlayerNumber);
+                $("#results").empty();
                 oppbox.empty();
                 oppbox.append("<div class='playarea'>" + oppname + "</div>");
                 var oppselection = $("<div class='userchoices'>");
@@ -144,7 +156,7 @@ function playGame(myPlayerNumber, myUserId) {
                     oppselection.append("<button>Paper!</button>");
                     oppselection.append("<button>Scissors!</button>");
                 }else {
-                    oppselection.append("<div>" + oppchoice + "!</div>")
+                    oppselection.append("<div>" + oppname + " has selected!</div>")
                 }
                 oppbox.append(oppselection);
                 oppbox.append("<div class='playarea'> Wins: " + oppwins + ", Losses: " + opploss + "</div>");
@@ -153,6 +165,26 @@ function playGame(myPlayerNumber, myUserId) {
 
             if ((snapshot.val()[opponentPlayerNumber] != undefined) && (snapshot.val()[myPlayerNumber] != undefined) && (yourchoice != "none" && oppchoice != "none")) {
                 //run functionto compare and update the values and middle screen
+                outcome = didYouWin(yourchoice, oppchoice);
+
+                if (outcome === "win"){
+                    wins++;
+                    $("#results").empty();
+                    $("#results").append("<div>You Won!</div>");
+                }
+                else if (outcome === "loss"){
+                    loss++;
+                    $("#results").empty();
+                    $("#results").append("<div>You Loss!</div>");
+                }
+                else if (outcome === "draw"){
+                    $("#results").empty();
+                    $("#results").append("<div>Its a Draw!</div>");
+                }
+                turn++;
+
+                updateResults(wins, loss, turn, playernum);
+
 
             }
 
@@ -201,8 +233,8 @@ function assignplayernumber (name) {
 
             database.ref(PLAYERS_LOCATION + "/" + playernum).set({
                 name: myUserId,
-                wins: 0,
-                loss: 0,
+                wins: wins,
+                loss: loss,
                 choice: "none"
             });
 
@@ -214,6 +246,44 @@ function assignplayernumber (name) {
 
 }
 
+function didYouWin(yourRPS, opponentRPS) {
+
+// Run traditional rock, paper, scissors logic and return whether you won, lost, or had a draw.
+    switch(yourRPS) {
+        case 'rock':
+            switch(opponentRPS) {
+                case 'rock':
+                    return 'draw';
+                case 'paper':
+                    return 'lose';
+                case 'scissors':
+                    return 'win';
+            }
+            break;
+        case 'paper':
+            switch(opponentRPS) {
+                case 'rock':
+                    return 'win';
+                case 'paper':
+                    return 'draw';
+                case 'scissors':
+                    return 'lose';
+            }
+            break;
+        case 'scissors':
+            switch(opponentRPS) {
+                case 'rock':
+                    return 'lose';
+                case 'paper':
+                    return 'win';
+                case 'scissors':
+                    return 'draw';
+            }
+            break;
+    }
+}
+
+
 //setting rps value to database
 
 function setRPS(myPlayerNumber, myRPS) {
@@ -221,6 +291,20 @@ function setRPS(myPlayerNumber, myRPS) {
     console.log(myRPS);
     database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({choice: myRPS});
 }
+
+
+function updateResults(myWins, myLoss, myCount, myPlayerNumber) {
+    setTimeout(function () {
+        console.log(myPlayerNumber);
+        database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({choice: "none"});
+        database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({wins: myWins});
+        database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({loss: myLoss});
+        database.ref(TURN_LOCATION).update({turn: myCount});
+    }, 5000);
+
+
+}
+
 
 
 //remove person from database
