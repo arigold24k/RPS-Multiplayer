@@ -172,7 +172,7 @@ function playGame(myPlayerNumber, myUserId) {
                     $("#results").empty();
                     $("#results").append("<div>You Won!</div>");
                 }
-                else if (outcome === "loss"){
+                else if (outcome === "lose"){
                     loss++;
                     $("#results").empty();
                     $("#results").append("<div>You Loss!</div>");
@@ -300,7 +300,7 @@ function updateResults(myWins, myLoss, myCount, myPlayerNumber) {
         database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({wins: myWins});
         database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({loss: myLoss});
         database.ref(TURN_LOCATION).update({turn: myCount});
-    }, 5000);
+    }, 2000);
 
 
 }
