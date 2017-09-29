@@ -4,7 +4,6 @@ var TURN_LOCATION = 'player/turn';
 var CHAT_LOCATION = 'player/chat';
 var name;
 var playernum = null;
-var turn = 0;
 var turn1;
 var userbox;
 var oppbox;
@@ -28,35 +27,61 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var docturn = database.ref(TURN_LOCATION);
 
-
-$("#player1").empty();
-$("#player2").empty();
-$("#player1").text("Waiting for Player 1");
-$("#player2").text("Waiting for Player 2");
+//
+// $("#player1").empty();
+// $("#player2").empty();
+// $("#player1").text("Waiting for Player 1");
+// $("#player2").text("Waiting for Player 2");
 
 
 
 database.ref('player').on("value", function (snapshot) {
 
     console.log(snapshot.val());
-    if (snapshot.val() === null) {
+    if (snapshot.val() === null){
         $("#player1").empty();
-        $("#player2").empty();
         $("#player1").text("Waiting for Player 1");
+        $("#player2").empty();
         $("#player2").text("Waiting for Player 2");
     }
+    else if ((snapshot.val()[1] != undefined && snapshot.val()[2] != undefined) && playernum === null) {
+        $("#player1").empty();
+        $("#player1").text(snapshot.val()[1].name + " is currently playing.");
+        $("#player2").empty();
+        $("#player2").text(snapshot.val()[2].name + " is currently playing.");
 
+    }
+
+    else {
+        if (snapshot.val()[1] === undefined) {
+            $("#player1").empty();
+            $("#player1").text("Waiting for Player 1");
+        }else {
+            $("#player1").empty();
+            $("#player1").text(snapshot.val()[1].name + " is waiting for you.");
+        }
+
+        if (snapshot.val()[2] === undefined) {
+            $("#player2").empty();
+            $("#player2").text("Waiting for Player 2");
+        }else {
+            $("#player2").empty();
+            $("#player2").text(snapshot.val()[2].name + " is waiting for you.");
+        }
+
+    }
 });
 
 database.ref('player/turn').on("value",function(snapshot) {
     console.log(snapshot.val());
-    if (snapshot.val() === null) {
-        turn1 = null;
+    if (snapshot.val() === null || snapshot.val().turn === null) {
+        turn1 = 0;
         return turn1;
     }
     else {
         //changes when turn is identifed so turn1 does not stay null and keep running the below condiditon
         turn1 = snapshot.val().turn;
+        return turn1;
     }
 
 });
@@ -133,9 +158,9 @@ function playGame(myPlayerNumber, myUserId) {
                     userbox.append("<div class='playarea'> Wins: " + snapshot.val()[+myPlayerNumber].wins + ", Losses: " + snapshot.val()[+myPlayerNumber].loss + "</div>");
             }
             //both players ready
-            else if((snapshot.val()[opponentPlayerNumber] != undefined) && (snapshot.val()[myPlayerNumber] != undefined)) {
+            else if((snapshot.val()[opponentPlayerNumber] != undefined) && (snapshot.val()[myPlayerNumber] != undefined && turn1 != null)) {
                 docturn.set({
-                   turn: turn,
+                   turn: turn1,
                 });
                 //setting variables to values to make it easiier
                 var yourname = snapshot.val()[+myPlayerNumber].name;
@@ -188,24 +213,24 @@ function playGame(myPlayerNumber, myUserId) {
 
                 if (outcome === "win"){
                     wins++;
-                    turn++;
+                    turn1++;
                     $("#results").empty();
                     $("#results").append("<div>You Won!</div>");
                 }
                 else if (outcome === "lose"){
                     loss++;
-                    turn++;
+                    turn1++;
                     $("#results").empty();
                     $("#results").append("<div>You Loss!</div>");
                 }
                 else if (outcome === "draw"){
-                    turn++;
+                    turn1++;
                     $("#results").empty();
                     $("#results").append("<div>Its a Draw!</div>");
                 }
 
 
-                updateResults(wins, loss, turn, playernum);
+                updateResults(wins, loss, turn1, playernum);
 
 
             }
@@ -346,16 +371,21 @@ function updateResults(myWins, myLoss, myCount, myPlayerNumber) {
         database.ref(PLAYERS_LOCATION + "/" +myPlayerNumber).update({loss: myLoss});
         database.ref(TURN_LOCATION).update({turn: myCount});
     }, 2000);
-
-
 }
 
 
 
 //remove person from database
 window.onunload = function() {
-    database.ref("player/" + playernum).remove();
     docturn.remove();
-    database.ref(CHAT_LOCATION).remove();
+    // docturn.set({turn: null});
+    database.ref("player/" + playernum).remove();
+    database.ref(CHAT_LOCATION).push({name: name,
+        mess: "Has disconnected."});
+    database.ref(PLAYERS_LOCATION).once("value").then(function (snapshot) {
+        if (snapshot.val()[1] === undefined && snapshot.val()[2] === undefined) {
+            database.ref(CHAT_LOCATION).remove();
+        }
+    });
 };
 
